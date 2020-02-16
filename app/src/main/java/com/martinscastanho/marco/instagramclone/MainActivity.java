@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,20 +18,26 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnKeyListener {
     Boolean isSignIn = true;
+    EditText usernameEditText;
+    EditText passwordEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        usernameEditText = findViewById(R.id.usernameEditText);
+        passwordEditText = findViewById(R.id.passwordEditText);
+
+        passwordEditText.setOnKeyListener(this);
+
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
     }
 
     public void confirmButtonPressed(View view){
-        EditText usernameEditText = findViewById(R.id.usernameEditText);
-        EditText passwordEditText = findViewById(R.id.passwordEditText);
+
         String username = usernameEditText.getText().toString();
         String password = passwordEditText.getText().toString();
 
@@ -101,5 +108,16 @@ public class MainActivity extends AppCompatActivity {
             textView.setText("or Login");
         }
         isSignIn = !isSignIn;
+    }
+
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        Log.i("KEY PRESSED", "some key was pressed");
+        if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+            Log.i("KEY PRESSED", "ENTER was pressed");
+            confirmButtonPressed(v);
+        }
+
+        return false;
     }
 }
