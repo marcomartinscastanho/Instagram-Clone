@@ -1,13 +1,16 @@
 package com.martinscastanho.marco.instagramclone;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +21,7 @@ import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnKeyListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnKeyListener {
     Boolean isSignIn = true;
     EditText usernameEditText;
     EditText passwordEditText;
@@ -28,9 +31,13 @@ public class MainActivity extends AppCompatActivity implements View.OnKeyListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ConstraintLayout backgroundLayout = findViewById(R.id.backgroundLayout);
+        ImageView logoImageView = findViewById(R.id.logoImageView);
+        backgroundLayout.setOnClickListener(this);
+        logoImageView.setOnClickListener(this);
+
         usernameEditText = findViewById(R.id.usernameEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
-
         passwordEditText.setOnKeyListener(this);
 
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
@@ -119,5 +126,14 @@ public class MainActivity extends AppCompatActivity implements View.OnKeyListene
         }
 
         return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.backgroundLayout || v.getId() == R.id.logoImageView){
+            // Dismiss the keyboard
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
     }
 }
