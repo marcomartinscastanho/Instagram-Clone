@@ -3,6 +3,7 @@ package com.martinscastanho.marco.instagramclone;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -22,9 +23,9 @@ import com.parse.SignUpCallback;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnKeyListener {
-    Boolean isSignIn = true;
-    EditText usernameEditText;
-    EditText passwordEditText;
+    protected Boolean isSignIn = true;
+    protected EditText usernameEditText;
+    protected EditText passwordEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +41,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         passwordEditText = findViewById(R.id.passwordEditText);
         passwordEditText.setOnKeyListener(this);
 
+        if(isUserLoggedIn()){
+            showUserList();
+        }
+
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
     }
 
-    public void confirmButtonPressed(View view){
+    @Override
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
+        Log.i("KEY PRESSED", "some key was pressed");
+        if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+            Log.i("KEY PRESSED", "ENTER was pressed");
+            confirmButtonPressed(v);
+        }
 
+        return false;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.backgroundLayout || v.getId() == R.id.logoImageView){
+            // Dismiss the keyboard
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    public Boolean isUserLoggedIn(){
+        return ParseUser.getCurrentUser() != null;
+    }
+
+    public void confirmButtonPressed(View view){
         String username = usernameEditText.getText().toString();
         String password = passwordEditText.getText().toString();
 
@@ -75,10 +103,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.e("ERROR", "user is null");
                 }
 
-                Toast.makeText(MainActivity.this, "" + username + " logged in successfully", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "" + username + " logged in successfully", Toast.LENGTH_SHORT).show();
+                showUserList();
             }
         });
 
+        // TODO: remove this
         ParseUser.logOut();
     }
 
@@ -94,11 +124,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 else {
                     Log.i("SIGN IN", "Success!");
+                    showUserList();
                 }
             }
         });
 
+        // TODO: remove this
         ParseUser.logOut();
+    }
+
+    public void showUserList(){
+        Intent intent = new Intent(getApplicationContext(), UserListActivity.class);
+        startActivity(intent);
     }
 
     public void changeLoginSignIn(View view){
@@ -115,25 +152,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             textView.setText("or Login");
         }
         isSignIn = !isSignIn;
-    }
-
-    @Override
-    public boolean onKey(View v, int keyCode, KeyEvent event) {
-        Log.i("KEY PRESSED", "some key was pressed");
-        if(keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-            Log.i("KEY PRESSED", "ENTER was pressed");
-            confirmButtonPressed(v);
-        }
-
-        return false;
-    }
-
-    @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.backgroundLayout || v.getId() == R.id.logoImageView){
-            // Dismiss the keyboard
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
     }
 }
