@@ -107,9 +107,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showUserList();
             }
         });
-
-        // TODO: remove this
-        ParseUser.logOut();
     }
 
     public void signIn(String username, String password){
@@ -128,9 +125,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
-
-        // TODO: remove this
-        ParseUser.logOut();
     }
 
     public void showUserList(){
